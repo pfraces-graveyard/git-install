@@ -32,4 +32,6 @@ Features
 Install
 -------
 
-    npm install -g udm
+    git clone https://github.com/pfraces/udm.git
+    cd udm
+    npm link
