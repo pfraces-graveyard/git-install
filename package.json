@@ -1,0 +1,11 @@
+{
+  "name": "udm",
+  "description": "universal dependency manager",
+  "version": "0.1.0",
+  "bin": {
+    "udm": "udm.js"
+  },
+  "dependencies": {
+    "shelljs": "*"
+  }
+}
