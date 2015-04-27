@@ -30,16 +30,15 @@ var githubArchive = function (domain, package, version) {
       root = 'dependencies',
       config = null;
 
-  echo('downloading', domain + '/' + package, '(' + version + ')');
-
   if (!test('-d', root)) { mkdir(root); }
   cd(root);
 
   if (test('-d', pkgId)) {
-    echo('cached');
     cd('..');
     return;
   }
+
+  echo('downloading', domain + '/' + package, '(' + version + ')');
 
   if (exec('curl -Lk ' + url + ' -o ' + output, { silent: true }).code !== 0) {
     echo('err: downloading archive');
