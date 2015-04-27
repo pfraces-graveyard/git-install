@@ -1,9 +1,17 @@
 #!/usr/bin/env node
+
 require('shelljs/global');
 
 var each = function (object, fn) {
   for (var prop in object) { fn(object[prop], prop); }
 };
+
+var pkgConfigFile = 'dependencies.json',
+    cache = pwd() + '/dependencies',
+    output = 'archive.tar.gz';
+   
+// create cache if it does not exist yet
+if (!test('-d', cache)) { mkdir(cache); }
 
 var udm = function (config, indent) {
   indent = indent || '';
@@ -14,6 +22,11 @@ var udm = function (config, indent) {
         package = tokens[1],
         version = item;
    
+    var prefix = package + '-' + version,
+        dest = package + '/' + version,
+        childConfigFile = dest + '/' + pkgConfigFile,
+        config = null;
+   
     var url = [
       'https://github.com',
       domain,
@@ -21,46 +34,38 @@ var udm = function (config, indent) {
       'archive',
       version + '.tar.gz'
     ].join('/');
-   
-    var pkgId = package + '-' + version,
-        output = pkgId + '.tar.gz',
-        root = 'dependencies',
-        config = null;
 
-    echo(indent + domain + '/' + package, '(' + version + ')');
+    echo(indent + domain + '/' + package + '@' + version);
+    cd(cache);
    
-    if (!test('-d', root)) { mkdir(root); }
-    cd(root);
+    // check cached versions
+    if (test('-d', dest)) { return; }
    
-    if (test('-d', pkgId)) {
-      cd('..');
-      return;
-    }
-   
+    // download archive
     if (exec('curl -Lk ' + url + ' -o ' + output, { silent: true }).code !== 0) {
       echo('err: downloading archive');
-      cd('..');
       return;
     }
     
+    // extract archive
     if (exec('tar -xzf ' + output, { silent: true }).code !== 0) {
       echo('err: extracting archive');
       rm(output);
-      cd('..');
       return;
     }
     
+    // cleanup
     rm(output);
-    cd(pkgId);
-   
-    if (test('-f', 'dependencies.json')) {
-      config = JSON.parse(cat('dependencies.json'));
+    if (!test('-d', package)) { mkdir(package); }
+    mv(prefix, dest);
+
+    // check nested dependencies
+    if (test('-f', childConfigFile)) {
+      config = JSON.parse(cat(childConfigFile));
+      if (config) { udm(config, indent + '  '); }
     }
-   
-    cd('../..');
-    if (config) { udm(config, indent + '  '); }
   });
 };
  
-var config = JSON.parse(cat('dependencies.json'));
+var config = JSON.parse(cat(pkgConfigFile));
 udm(config);
