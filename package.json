@@ -6,6 +6,7 @@
     "udm": "udm.js"
   },
   "dependencies": {
+    "semver": "*",
     "shelljs": "*"
   }
 }
