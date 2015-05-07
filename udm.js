@@ -7,7 +7,6 @@ var each = function (object, fn) {
   for (var prop in object) { fn(object[prop], prop); }
 };
 
-// TODO: sort tags
 var getTags = (function () {
   var cache = {};
 
@@ -34,6 +33,7 @@ var getTags = (function () {
 
 var findMaxTag = function (domain, package, versionRange) {
   if (versionRange === 'master') { return 'master'; }
+
   var tags = getTags(domain, package, versionRange);
   if (!tags.length) { return; }
 
@@ -41,7 +41,11 @@ var findMaxTag = function (domain, package, versionRange) {
     return semver.satisfies(semver.clean(tag), versionRange);
   });
 
-  return tagsInRange.pop();
+  var compareTags = function (a, b) {
+    return semver.compare(semver.clean(a), semver.clean(b));
+  };
+
+  return tagsInRange.sort(compareTags).pop();
 };
 
 var pkgConfigFile = 'dependencies.json',
@@ -68,7 +72,7 @@ var udm = function (config, indent) {
       return;
     }
 
-    var version = semver.clean(tag);
+    var version = tag === 'master' ? tag : semver.clean(tag);
     echo(pkgLog + version);
 
     var prefix = package + '-' + version,
