@@ -32,14 +32,13 @@ var getTags = (function () {
   };
 })();
 
-// TODO: do not return the cleaned version of a tag
-var getVersion = function (domain, package, versionRange) {
+var findMaxTag = function (domain, package, versionRange) {
   if (versionRange === 'master') { return 'master'; }
   var tags = getTags(domain, package, versionRange);
   if (!tags.length) { return; }
 
-  var tagsInRange =  tags.map(semver.clean).filter(function (item) {
-    return semver.satisfies(item, versionRange);
+  var tagsInRange =  tags.filter(function (tag) {
+    return semver.satisfies(semver.clean(tag), versionRange);
   });
 
   return tagsInRange.pop();
@@ -60,15 +59,16 @@ var udm = function (config, indent) {
         domain = tokens[0],
         package = tokens[1],
         versionRange = item,
-        version = getVersion(domain, package, versionRange);
+        tag = findMaxTag(domain, package, versionRange);
 
     var pkgLog = indent + domain + '/' + package + '@' + versionRange + ': ';
 
-    if (!version) {
+    if (!tag) {
       echo(pkgLog + 'err: no version found');
       return;
     }
 
+    var version = semver.clean(tag);
     echo(pkgLog + version);
 
     var prefix = package + '-' + version,
@@ -81,7 +81,7 @@ var udm = function (config, indent) {
       domain,
       package,
       'archive',
-      version + '.tar.gz'
+      tag + '.tar.gz'
     ].join('/');
 
     // check cached versions
