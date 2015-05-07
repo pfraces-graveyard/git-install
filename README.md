@@ -10,7 +10,8 @@ Create a `dependencies.json` file in the root of your project
 
 ```json
 {
-  "jquery/jquery": "2.1.3",
+  "jrburke/requirejs": "2.1.*",
+  "jquery/jquery": "^2.1.3",
   "jashkenas/underscore": "master"
 }
 ```
@@ -25,9 +26,9 @@ Dependencies are downloaded recursively from github and stored in the
 Features
 --------
 
-*   no registry
-*   version tracking through git tags
-*   [TODO] semver
+*   Search packages directly in github without a registry
+*   Versions are git tags
+*   Semantic versioning
 
 Install
 -------
