@@ -7,32 +7,42 @@ var each = function (object, fn) {
   for (var prop in object) { fn(object[prop], prop); }
 };
 
-var getTags = function (domain, package, versionRange) {
-  // TODO: git ls-remote -t https://github.com/...
-  // TODO: memoize getTags()
-  // TODO: do not return the cleaned version of a tag
-  // TODO: sort tags
-  var url = [
-    'https://api.github.com/repos',
-    domain,
-    package,
-    'git/refs/tags',
-  ].join('/');
+// TODO: sort tags
+var getTags = (function () {
+  var cache = {};
 
-  var response = exec('curl -Ls ' + url, { silent: true }).output;
+  var RE = {
+    LINES: /\n/g,
+    TAG_PREFIX: /^.*refs\/tags\//g
+  };
 
-  return JSON.parse(response).map(function (item) {
-    return semver.clean(item.ref.replace('refs/tags/', ''));
-  }).filter(function (item) {
-    return semver.satisfies(item, versionRange);
-  });
-};
+  return function (domain, package, versionRange) {
+    var remote = 'https://github.com/' + domain + '/' + package + '.git';
+    if (cache[remote]) { return cache[remote]; }
 
+    var cmd = exec('git ls-remote -t ' + remote, { silent: true }),
+        output = cmd.output.split(RE.LINES).slice(0, -1);
+
+    var tags = output.map(function (line) {
+      return line.replace(RE.TAG_PREFIX, '');
+    });
+
+    cache[remote] = tags;
+    return tags;
+  };
+})();
+
+// TODO: do not return the cleaned version of a tag
 var getVersion = function (domain, package, versionRange) {
   if (versionRange === 'master') { return 'master'; }
   var tags = getTags(domain, package, versionRange);
   if (!tags.length) { return; }
-  return tags.pop();
+
+  var tagsInRange =  tags.map(semver.clean).filter(function (item) {
+    return semver.satisfies(item, versionRange);
+  });
+
+  return tagsInRange.pop();
 };
 
 var pkgConfigFile = 'dependencies.json',
