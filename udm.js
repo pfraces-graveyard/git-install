@@ -48,14 +48,11 @@ var udm = function (config, indent) {
 
     sh.cd(CACHE_DIR);
 
-    if (sh.test('-d', cacheDest)) {
-      copyCachedPackage(pkgName, version, cacheDest, pkgDest);
-      return;
-    }
-
-    if (!downloadPackage(domain, pkgName, tag, cacheDest)) {
-      console.error('err: downloading pkgName');
-      return;
+    if (!sh.test('-d', cacheDest)) {
+      if (!downloadPackage(domain, pkgName, tag, cacheDest)) {
+        console.error('err: downloading pkgName');
+        return;
+      }
     }
 
     copyCachedPackage(pkgName, version, cacheDest, pkgDest);
