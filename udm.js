@@ -1,59 +1,25 @@
 #!/usr/bin/env node
+'use strict';
 
-var semver = require('semver');
-require('shelljs/global');
+var path              = require('path'),
+    os                = require('osenv'),
+    semver            = require('semver'),
+    sh                = require('shelljs'),
+    getTag            = require('./getTag'),
+    downloadPackage   = require('./downloadPackage'),
+    copyCachedPackage = require('./copyCachedPackage');
 
 var each = function (object, fn) {
   for (var prop in object) { fn(object[prop], prop); }
 };
 
-var getTags = (function () {
-  var cache = {};
+var PKG_CONFIG_FILENAME = 'dependencies.json',
+    CACHE_DIR = path.resolve(os.home(), '.udm'),
+    DEST_DIR = path.resolve(sh.pwd(), 'dependencies');
 
-  var RE = {
-    LINES: /\n/g,
-    TAG_PREFIX: /^.*refs\/tags\//g
-  };
-
-  return function (domain, package, versionRange) {
-    var remote = 'https://github.com/' + domain + '/' + package + '.git';
-    if (cache[remote]) { return cache[remote]; }
-
-    var cmd = exec('git ls-remote -t ' + remote, { silent: true }),
-        output = cmd.output.split(RE.LINES).slice(0, -1);
-
-    var tags = output.map(function (line) {
-      return line.replace(RE.TAG_PREFIX, '');
-    });
-
-    cache[remote] = tags;
-    return tags;
-  };
-})();
-
-var findMaxTag = function (domain, package, versionRange) {
-  if (versionRange === 'master') { return 'master'; }
-
-  var tags = getTags(domain, package, versionRange);
-  if (!tags.length) { return; }
-
-  var tagsInRange =  tags.filter(function (tag) {
-    return semver.satisfies(semver.clean(tag), versionRange);
-  });
-
-  var compareTags = function (a, b) {
-    return semver.compare(semver.clean(a), semver.clean(b));
-  };
-
-  return tagsInRange.sort(compareTags).pop();
-};
-
-var pkgConfigFile = 'dependencies.json',
-    cache = pwd() + '/dependencies',
-    output = 'archive.tar.gz';
-
-// create cache if it does not exist yet
-if (!test('-d', cache)) { mkdir(cache); }
+if (!sh.test('-d', CACHE_DIR)) { sh.mkdir(CACHE_DIR); }
+if (sh.test('-d', DEST_DIR)) { sh.rm('-r', DEST_DIR); }
+sh.mkdir(DEST_DIR);
 
 var udm = function (config, indent) {
   indent = indent || '';
@@ -61,62 +27,45 @@ var udm = function (config, indent) {
   each(config, function (item, index) {
     var tokens = index.split('/'),
         domain = tokens[0],
-        package = tokens[1],
+        pkgName = tokens[1],
         versionRange = item,
-        tag = findMaxTag(domain, package, versionRange);
+        tag = getTag(domain, pkgName, versionRange);
 
-    var pkgLog = indent + domain + '/' + package + '@' + versionRange + ': ';
+    var pkgLog = indent + domain + '/' + pkgName + '@' + versionRange + ': ';
 
     if (!tag) {
-      echo(pkgLog + 'err: no version found');
+      console.error(pkgLog + 'err: no version found');
       return;
     }
 
-    var version = tag === 'master' ? tag : semver.clean(tag);
-    echo(pkgLog + version);
+    var version = semver.clean(tag);
+    console.log(pkgLog + version);
 
-    var prefix = package + '-' + version,
-        dest = package + '/' + version,
-        childConfigFile = dest + '/' + pkgConfigFile,
+    var cacheDest = path.resolve(CACHE_DIR, pkgName, version),
+        pkgDest = path.resolve(DEST_DIR, pkgName),
+        childConfigFile = path.resolve(cacheDest, PKG_CONFIG_FILENAME),
         config = null;
 
-    var url = [
-      'https://github.com',
-      domain,
-      package,
-      'archive',
-      tag + '.tar.gz'
-    ].join('/');
+    sh.cd(CACHE_DIR);
 
-    // check cached versions
-    cd(cache);
-    if (test('-d', dest)) { return; }
-
-    // download archive
-    if (exec('curl -Lsk ' + url + ' -o ' + output, { silent: true }).code !== 0) {
-      echo('err: downloading archive');
+    if (sh.test('-d', cacheDest)) {
+      copyCachedPackage(pkgName, version, cacheDest, pkgDest);
       return;
     }
 
-    // extract archive
-    if (exec('tar -xzf ' + output, { silent: true }).code !== 0) {
-      echo('err: extracting archive');
-      rm(output);
+    if (!downloadPackage(domain, pkgName, tag, cacheDest)) {
+      console.error('err: downloading pkgName');
       return;
     }
 
-    // cleanup
-    rm(output);
-    if (!test('-d', package)) { mkdir(package); }
-    mv(prefix, dest);
+    copyCachedPackage(pkgName, version, cacheDest, pkgDest);
 
-    // check nested dependencies
-    if (test('-f', childConfigFile)) {
-      config = JSON.parse(cat(childConfigFile));
+    if (sh.test('-f', childConfigFile)) {
+      config = JSON.parse(sh.cat(childConfigFile));
       if (config) { udm(config, indent + '  '); }
     }
   });
 };
 
-var config = JSON.parse(cat(pkgConfigFile));
+var config = JSON.parse(sh.cat(PKG_CONFIG_FILENAME));
 udm(config);

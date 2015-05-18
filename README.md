@@ -12,7 +12,7 @@ Create a `dependencies.json` file in the root of your project
 {
   "jrburke/requirejs": "2.1.*",
   "jquery/jquery": "^2.1.3",
-  "jashkenas/underscore": "master"
+  "jashkenas/underscore": "*"
 }
 ```
 
