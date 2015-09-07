@@ -1,9 +1,10 @@
 {
-  "name": "udm",
-  "description": "universal dependency manager",
-  "version": "0.2.0",
+  "name": "pacman",
+  "description": "package manager",
+  "version": "0.3.0",
+  "main": "src/pacman.js",
   "bin": {
-    "udm": "udm.js"
+    "pacman": "src/cli.js"
   },
   "dependencies": {
     "osenv": "*",

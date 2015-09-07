@@ -1,27 +1,7 @@
-udm
-===
+pacman
+======
 
-Universal dependency manager
-
-Usage
------
-
-Create a `dependencies.json` file in the root of your project
-
-```json
-{
-  "jrburke/requirejs": "2.1.*",
-  "jquery/jquery": "^2.1.3",
-  "jashkenas/underscore": "*"
-}
-```
-
-Use the CLI
-
-    udm
-
-Dependencies are downloaded recursively from github and stored in the
-`dependencies/` directory
+Package manager
 
 Features
 --------
@@ -30,9 +10,59 @@ Features
 *   Versions are git tags
 *   Semantic versioning
 
+Usage
+-----
+
+```
+pacman
+```
+
+Dependencies are downloaded recursively from github and stored in the
+`dependencies/` directory
+
 Install
 -------
 
-    git clone https://github.com/pfraces/udm.git
-    cd udm
-    npm link
+**pacman** is not available in the **npm** registry because there is a package
+with the same name already. Luckily, **npm** can download from git endpoints
+directly.
+
+We recommend to install **pacman** locally and run it `npm scripts`
+
+**package.json**
+
+```json
+{
+  "devDependencies": {
+    "pacman": "pfraces/pacman"
+  },
+  "scripts": {
+    "pacman": "pacman"
+  }
+}
+```
+
+Then, from the command line:
+
+```
+npm install pacman
+npm run pacman
+```
+
+Setup dependencies
+------------------
+
+**pacman** uses `package.json`. Using the same file, **pacman** packages can
+take benefit of **npm** metada like `name` and `version` entries
+
+Define your package dependencies in the `pkgDependencies` entry
+
+```json
+{
+  "pkgDependencies": {
+    "jrburke/requirejs": "2.1.*",
+    "jquery/jquery": "^2.1.3",
+    "jashkenas/underscore": "*"
+  }
+}
+```

@@ -13,18 +13,19 @@ var each = function (object, fn) {
   for (var prop in object) { fn(object[prop], prop); }
 };
 
-var PKG_CONFIG_FILENAME = 'dependencies.json',
-    CACHE_DIR = path.resolve(os.home(), '.udm'),
+var PKG_CONFIG_FILENAME = 'package.json',
+    PKG_CONFIG_DEPENDENCIES = 'pkgDependencies',
+    CACHE_DIR = path.resolve(os.home(), '.pacman'),
     DEST_DIR = path.resolve(sh.pwd(), 'dependencies');
 
 if (!sh.test('-d', CACHE_DIR)) { sh.mkdir(CACHE_DIR); }
 if (sh.test('-d', DEST_DIR)) { sh.rm('-r', DEST_DIR); }
 sh.mkdir(DEST_DIR);
 
-var udm = function (config, indent) {
+var pacman = function (config, indent) {
   indent = indent || '';
 
-  each(config, function (item, index) {
+  each(config[PKG_CONFIG_DEPENDENCIES], function (item, index) {
     var tokens = index.split('/'),
         domain = tokens[0],
         pkgName = tokens[1],
@@ -59,10 +60,10 @@ var udm = function (config, indent) {
 
     if (sh.test('-f', childConfigFile)) {
       config = JSON.parse(sh.cat(childConfigFile));
-      if (config) { udm(config, indent + '  '); }
+      if (config) { pacman(config, indent + '  '); }
     }
   });
 };
 
 var config = JSON.parse(sh.cat(PKG_CONFIG_FILENAME));
-udm(config);
+pacman(config);
