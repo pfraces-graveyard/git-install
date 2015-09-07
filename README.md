@@ -13,6 +13,24 @@ Features
 Usage
 -----
 
+Define your package dependencies in the `pkgDependencies` entry of your
+project's `package.json`
+
+```json
+{
+  "pkgDependencies": {
+    "jrburke/requirejs": "2.1.*",
+    "jquery/jquery": "^2.1.3",
+    "jashkenas/underscore": "*"
+  }
+}
+```
+
+Using the same file, **pacman** packages can take benefit of **npm** metada
+like `name` and `version` entries
+
+To install your project dependencies, execute the CLI
+
 ```
 pacman
 ```
@@ -47,22 +65,4 @@ Then, from the command line:
 ```
 npm install pacman
 npm run pacman
-```
-
-Setup dependencies
-------------------
-
-**pacman** uses `package.json`. Using the same file, **pacman** packages can
-take benefit of **npm** metada like `name` and `version` entries
-
-Define your package dependencies in the `pkgDependencies` entry
-
-```json
-{
-  "pkgDependencies": {
-    "jrburke/requirejs": "2.1.*",
-    "jquery/jquery": "^2.1.3",
-    "jashkenas/underscore": "*"
-  }
-}
 ```
