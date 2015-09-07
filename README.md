@@ -29,7 +29,7 @@ project's `package.json`
 Using the same file, **pacman** packages can take benefit of **npm** metada
 like `name` and `version` entries
 
-To install your project dependencies, execute the CLI
+To install your dependencies, use the CLI
 
 ```
 pacman
@@ -45,7 +45,7 @@ Install
 with the same name already. Luckily, **npm** can download from git endpoints
 directly.
 
-We recommend to install **pacman** locally and run it `npm scripts`
+We recommend to install **pacman** locally and run it using `npm scripts`
 
 **package.json**
 
