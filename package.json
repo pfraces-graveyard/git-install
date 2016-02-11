@@ -1,7 +1,16 @@
 {
   "name": "git-install",
   "description": "git-based package manager",
-  "version": "0.5.1",
+  "version": "0.5.2",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pfraces/git-install.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pfraces/git-install/issues"
+  },
+  "homepage": "https://github.com/pfraces/git-install#readme",
   "main": "src/git-install.js",
   "bin": {
     "git-install": "src/cli.js"
