@@ -1,7 +1,7 @@
-pacman
-======
+git-install
+===========
 
-Package manager
+git-based package manager
 
 Features
 --------
@@ -13,12 +13,12 @@ Features
 Usage
 -----
 
-Define your package dependencies in the `pkgDependencies` entry of your
+Define your package dependencies in the `gitDependencies` entry of your
 project's `package.json`
 
 ```json
 {
-  "pkgDependencies": {
+  "gitDependencies": {
     "jrburke/requirejs": "2.1.*",
     "jquery/jquery": "^2.1.3",
     "jashkenas/underscore": "*"
@@ -26,43 +26,41 @@ project's `package.json`
 }
 ```
 
-Using the same file, **pacman** packages can take benefit of **npm** metada
+Using the same file, **git-install** packages can take benefit of **npm** metada
 like `name` and `version` entries
 
 To install your dependencies, use the CLI
 
 ```
-pacman
+git install
 ```
 
 Dependencies are downloaded recursively from github and stored in the
-`dependencies/` directory
+`git-dependencies/` directory
 
 Install
 -------
 
-**pacman** is not available in the **npm** registry because there is a package
-with the same name already. Luckily, **npm** can download from git endpoints
-directly.
+### Global
 
-We recommend to install **pacman** locally and run it using `npm scripts`
+    npm install -g git-install
+
+### Local (recommended)
 
 **package.json**
 
 ```json
 {
+  "gitDependencies": {},
   "devDependencies": {
-    "pacman": "pfraces/pacman"
+    "git-install": "*"
   },
   "scripts": {
-    "pacman": "pacman"
+    "setup": "npm install && git-install"
   }
 }
 ```
 
-Then, from the command line:
-
-```
-npm install pacman
-npm run pacman
+```sh
+npm run setup
 ```

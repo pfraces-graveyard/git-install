@@ -1,10 +1,10 @@
 {
-  "name": "pacman",
-  "description": "package manager",
-  "version": "0.3.0",
-  "main": "src/pacman.js",
+  "name": "git-install",
+  "description": "git-based package manager",
+  "version": "0.4.0",
+  "main": "src/git-install.js",
   "bin": {
-    "pacman": "src/cli.js"
+    "git-install": "src/cli.js"
   },
   "dependencies": {
     "osenv": "*",

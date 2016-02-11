@@ -1,8 +1,8 @@
 'use strict';
 
-var path   = require('path'),
-    semver = require('semver'),
-    sh     = require('shelljs');
+var path = require('path');
+var semver = require('semver');
+var sh = require('shelljs');
 
 var pkgVersion = {};
 

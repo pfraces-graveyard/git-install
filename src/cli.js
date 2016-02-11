@@ -1,4 +1,4 @@
 #!/usr/bin/env node
 'use strict';
 
-require('./pacman');
+require('./git-install');

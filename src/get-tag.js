@@ -1,7 +1,7 @@
 'use strict';
 
-var semver = require('semver'),
-    sh     = require('shelljs');
+var semver = require('semver');
+var sh = require('shelljs');
 
 var cache = {};
 
@@ -14,8 +14,8 @@ var tagList = function (domain, pkgName) {
   var remote = 'https://github.com/' + domain + '/' + pkgName + '.git';
   if (cache[remote]) { return cache[remote]; }
 
-  var cmd = sh.exec('git ls-remote -t ' + remote, { silent: true }),
-      output = cmd.output.split(RE.LINES).slice(0, -1);
+  var cmd = sh.exec('git ls-remote -t ' + remote, { silent: true });
+  var output = cmd.output.split(RE.LINES).slice(0, -1);
 
   var tags = output.map(function (line) {
     return line.replace(RE.TAG_PREFIX, '');
