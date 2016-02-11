@@ -51,9 +51,11 @@ Install
 
 ```json
 {
-  "gitDependencies": {},
   "devDependencies": {
     "git-install": "*"
+  },
+  "gitDependencies": {
+    ...
   },
   "scripts": {
     "setup": "npm install && git-install"
