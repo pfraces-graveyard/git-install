@@ -8,10 +8,9 @@ var pkgVersion = {};
 
 var copyCachedPackage = function (pkgName, version, source, dest) {
   if (!pkgVersion[pkgName] || semver.gt(version, pkgVersion[pkgName])) {
-    var sourceFiles = path.join(source, '*');
     if (pkgVersion[pkgName]) { sh.rm('-r', pkgDest); }
     pkgVersion[pkgName] = version;
-    sh.cp('-r', sourceFiles, dest);
+    sh.cp('-r', source, dest);
   }
 };
 
