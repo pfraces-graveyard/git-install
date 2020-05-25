@@ -16,7 +16,7 @@ var each = function (object, fn) {
 var PKG_CONFIG_FILENAME = 'package.json';
 var PKG_CONFIG_ENTRY = 'gitDependencies';
 var CACHE_DIR = path.resolve(os.home(), '.git-install');
-var DEST_DIR = path.resolve(sh.pwd(), 'git-dependencies');
+var DEST_DIR = path.resolve('' + sh.pwd(), 'git-dependencies');
 
 if (!sh.test('-d', CACHE_DIR)) { sh.mkdir(CACHE_DIR); }
 if (sh.test('-d', DEST_DIR)) { sh.rm('-r', DEST_DIR); }
