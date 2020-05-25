@@ -1,7 +1,7 @@
 {
   "name": "git-install",
   "description": "git-based package manager",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "license": "MIT",
   "repository": {
     "type": "git",
