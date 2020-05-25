@@ -1,7 +1,7 @@
 {
   "name": "git-install",
   "description": "git-based package manager",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -16,8 +16,8 @@
     "git-install": "src/cli.js"
   },
   "dependencies": {
-    "osenv": "*",
-    "semver": "*",
-    "shelljs": "*"
+    "osenv": "^0.1.5",
+    "semver": "^7.3.2",
+    "shelljs": "^0.8.4"
   }
 }
